@@ -1,0 +1,53 @@
+<---------------HTML+CSS--------------------------->
+<head>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<div class="event-widget">
+  <span class="icon">
+    <i class="fa fa-bullhorn"></i>
+  </span>
+  <div class="event-info">
+  <h3>Upcoming Event</h3>
+  <p style="color:black"><strong style="color:black">Customer Name:</strong> {{data.event.customerName}}</p>
+  <p style="color:black"><strong style="color:black">Event Date & Time:</strong> {{data.event.dateTime}}</p>
+</div>
+</div>
+.event-widget {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+  background-color:#428ac9;
+}
+
+.event-widget .icon {
+  float: left;
+  margin-right: 10px;
+}
+
+.event-widget .event-info {
+  overflow: hidden;
+}
+
+.icon i {
+  font-size: 24px;
+  color: black;
+}
+<------------------------------------------server script--------------------------->
+(function() {
+  // Query to fetch the upcoming event
+  var eventRecord = new GlideRecord('u_musicvile_events');
+  eventRecord.addQuery('u_date_and_time', '>', gs.nowDate());
+  eventRecord.orderBy('u_date_and_time');
+  eventRecord.setLimit(1);
+  eventRecord.query();
+  data.event = {};
+  if (eventRecord.next()) {
+    data.event.customerName = eventRecord.u_customer_name.toString() || "No data available";
+    data.event.dateTime = eventRecord.u_date_and_time.getDisplayValue() || "No data available";
+  } else {
+    data.event.customerName = "No upcoming events";
+    data.event.dateTime = "";
+  }
+})();
+
