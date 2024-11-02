@@ -1,0 +1,231 @@
+<-----Html+CSS+Script--->
+<style>
+  .event-form-container {
+    background-color: #f0f8ff;
+    border: 1px solid #ccc;
+    padding: 40px;
+    margin: 30px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    font-family: Arial, sans-serif;
+  }
+
+  .event-form-container h2 {
+    color: #333;
+    margin-bottom: 15px;
+    font-size: 24px;
+  }
+
+  .event-form-container label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+  }
+
+  .event-form-container input,
+  .event-form-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+  }
+
+  .event-form-container button {
+    width: 100%;
+    padding: 12px;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .event-form-container button:hover {
+    background-color: #45a049;
+  }
+
+  .success-message {
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 20px;
+  }
+
+  .event-type-image {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 105%;
+    z-index: 10;
+    width: 200px;
+    height: 150px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+</style>
+
+<div class="event-form-container">
+  <h2>Event Details</h2>
+  <form ng-submit="c.saveEvent()">
+    <label for="customerName">Customer Name:</label>
+    <input type="text" id="customerName" ng-model="c.eventData.customerName" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" ng-model="c.eventData.email" required />
+
+    <label for="eventDateTime">Event Date & Time:</label>
+    <input type="date" id="eventDateTime" ng-model="c.eventData.dateTime" required />
+    <label for="numberOfDays">Number of days:</label>
+    <input type="number" id="numberOfDays" ng-model="c.eventData.numberOfDays" required />
+
+
+    <label for="eventType">Event Type:</label>
+    <select id="eventType" ng-model="c.eventData.eventType" required>
+      <option value="Music Charity Event" onmouseenter="showEventTypeImage('music_charity')" onmouseleave="hideEventTypeImage()">Music Charity Event</option>
+      <option value="Opera Theatre" onmouseenter="showEventTypeImage('opera_theatre')" onmouseleave="hideEventTypeImage()">Opera Theatre</option>
+      <option value="Concert" onmouseenter="showEventTypeImage('concert')" onmouseleave="hideEventTypeImage()">Concert</option>
+      <option value="Live Performances" onmouseenter="showEventTypeImage('live_performances')" onmouseleave="hideEventTypeImage()">Live Performances</option>
+    </select>
+    <img id="eventTypeImage" class="event-type-image" alt="Event Type Image" />
+
+    <label for="location">Location:</label>
+<select id="location" ng-model="c.eventData.location" ng-options="loc.sys_id as loc.name for loc in c.locations" required>
+  <option value="">Select a location</option>
+</select>
+
+
+
+    <label for="audience">Number of Audience:</label>
+    <select id="audience" ng-model="c.eventData.audience" required>
+      <option value="<100">Less than 100</option>
+      <option value="100-500">Between 100 and 500</option>
+      <option value="500-1000">Between 500 and 1000</option>
+    </select>
+
+    <button type="submit">Save Event</button>
+  </form>
+
+  <div ng-if="c.showSuccessMessage" class="success-message">
+    Event added successfully!
+    We will contact u through Email!
+  </div>
+</div>
+
+<script>
+  document.getElementById("eventType").addEventListener("change", function() {
+    var eventType = this.value;
+    showEventTypeImage(eventType);
+  });
+
+  function showEventTypeImage(eventType) {
+    var image = document.getElementById('eventTypeImage');
+    switch (eventType) {
+      case 'Music Charity Event':
+        image.src = 'charity_choice.png';
+        break;
+      case 'Opera Theatre':
+        image.src = 'opera_choice.png';
+        break;
+      case 'Concert':
+        image.src = 'concert_choice.png';
+        break;
+      case 'Live Performances':
+        image.src = 'live_choice.png';
+        break;
+      default:
+        image.src = '';
+    }
+    image.style.display = eventType ? 'block' : 'none';
+  }
+
+  function hideEventTypeImage() {
+    document.getElementById('eventTypeImage').style.display = 'none';
+  }
+</script>
+
+<----------Server Script------------>
+(function($sp, input, data, options) {
+  data.success = false;
+
+  if (input) {
+    if (input.action === 'getLocations') {
+      // Hardcode the locations with sys_id and name
+      data.locations = [
+        { name: "English Village", sys_id: "44d4a9a6c36d9290bfe4991ed4013101" },
+        { name: "New York", sys_id: "5835a9a6c36d9290bfe4991ed401312e" },
+        { name: "California", sys_id: "925569a6c36d9290bfe4991ed4013141" }
+      ];
+    } else {
+      // Save event record with the selected location's sys_id
+      var gr = new GlideRecord('u_musicvile_events');
+      gr.initialize();
+      gr.u_customer_name = input.customerName;
+      gr.u_email = input.email;
+      gr.u_date_and_time = input.dateTime;
+      gr.u_event_type = input.eventType;
+      
+      // Store location as sys_id
+      gr.u_location = input.location;
+
+      gr.u_number_of_audience = input.audience;
+      gr.u_number_of_days = input.numberOfDays;
+
+      if (gr.insert()) {
+        data.success = true;
+      }
+    }
+  }
+})($sp, input, data, options);
+<-------------------Client Script----------------------->
+api.controller = function($scope) {
+  var c = this;
+
+  // Initialize event data object
+  c.eventData = {};
+  c.showSuccessMessage = false;
+  c.locations = [];
+
+  // Load predefined locations with sys_id and display name
+  c.loadLocations = function() {
+    c.server.get({ action: 'getLocations' }).then(function(response) {
+      if (response.data && response.data.locations) {
+        c.locations = response.data.locations;
+      }
+    });
+  };
+
+  // Call loadLocations on initialization
+  c.loadLocations();
+
+  c.saveEvent = function() {
+    c.data.customerName = c.eventData.customerName;
+    c.data.email = c.eventData.email;
+    c.data.dateTime = c.eventData.dateTime;
+    c.data.eventType = c.eventData.eventType;
+    
+    // Store selected location's sys_id
+    c.data.location = c.eventData.location;
+
+    c.data.audience = c.eventData.audience;
+    c.data.numberOfDays = c.eventData.numberOfDays;
+
+    c.server.update().then(function(response) {
+      if (response.success) {
+        c.showSuccessMessage = true;
+        c.eventData = {}; // Reset form fields after saving
+        $scope.$apply();
+      } else {
+        alert("There was an error saving the event. Please try again.");
+      }
+    });
+  };
+};
+
