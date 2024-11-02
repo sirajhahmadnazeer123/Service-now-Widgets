@@ -1,0 +1,72 @@
+<------------HTML+CSS---------------->
+<div class="review-widget">
+  <h2>Customer Reviews</h2>
+
+  <!-- Review 1 -->
+  <div class="review">
+    <p class="reviewer-name">Alice Johnson</p>
+    <div class="rating">
+      <span class="star">★</span>
+      <span class="star">★</span>
+      <span class="star">★</span>
+      <span class="star">★</span>
+      <span class="star">★</span> <!-- 4 stars out of 5 -->
+    </div>
+    <p class="review-text">"The event was well-organized and exceeded expectations!"</p>
+  </div>
+
+  <!-- Review 2 -->
+  <div class="review">
+    <p class="reviewer-name">Michael Lee</p>
+    <div class="rating">
+      <span class="star">★</span>
+      <span class="star">★</span>
+      <span class="star">★</span>
+      <span class="star">★</span>
+      <span class="star">☆</span> <!-- 5 stars out of 5 -->
+    </div>
+    <p class="review-text">"Fantastic event management, highly recommended!"</p>
+  </div>
+</div>
+.review-widget {
+  max-width: 600px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.review-widget h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.review {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 15px 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.reviewer-name {
+  font-weight: bold;
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.rating .star {
+  color: #FFD700; /* Gold color for stars */
+  font-size: 20px;
+  margin: 0 1px;
+}
+
+.review-text {
+  font-style: italic;
+  color: #666;
+  margin-top: 10px;
+}
+
+
